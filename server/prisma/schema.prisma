@@ -1,0 +1,228 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  //output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DietRule {
+  REQUIRE
+  AVOID
+  PREFER
+  ALLOW
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  name         String
+  createdAt    DateTime      @default(now())
+  dietProfiles DietProfile[]
+
+  scans Scan[]
+}
+
+model DietProfile {
+  id        String   @id @default(cuid())
+  userId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  tags  DietProfileTag[]
+  scans Scan[]
+
+  @@index([userId])
+}
+
+model DietTag {
+  id       String           @id @default(cuid())
+  key      String           @unique
+  label    String
+  profiles DietProfileTag[]
+}
+
+model DietProfileTag {
+  id            String      @id @default(cuid())
+  dietProfileId String
+  dietTagId     String
+  rule          DietRule    @default(ALLOW)
+  profile       DietProfile @relation(fields: [dietProfileId], references: [id], onDelete: Cascade)
+  tag           DietTag     @relation(fields: [dietTagId], references: [id], onDelete: Cascade)
+
+  @@unique([dietProfileId, dietTagId])
+  @@index([dietProfileId])
+  @@index([dietTagId])
+}
+
+//============== Products ================
+
+model Brand {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  products  Product[]
+}
+
+model Product {
+  id        String   @id @default(cuid())
+  brandId   String?
+  name      String
+  barcode   String?  @unique
+  createdAt DateTime @default(now())
+
+  brand Brand? @relation(fields: [brandId], references: [id], onDelete: SetNull)
+
+  servings    Serving[] // 1..n serving sizes
+  nutrients   ProductNutrient[] // per-serving nutrient amounts
+  ingredients ProductIngredient[] // ordered ingredient list
+  allergens   ProductAllergen[] // allergen flags
+  images      ProductImage[] // product photos
+  scans       Scan[] // OCR provenance
+
+  @@index([name])
+}
+
+model Serving {
+  id               String  @id @default(cuid())
+  productId        String
+  amount           Float
+  unit             String
+  householdMeasure String?
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  nutrients ProductNutrient[]
+
+  @@index([productId])
+}
+
+/// Master list of nutrients (calories, protein, sodium, etc.)
+model Nutrient {
+  id   String @id @default(cuid())
+  key  String @unique // e.g., "energy_kcal", "protein", "sodium"
+  name String // display name
+  unit String // "kcal", "g", "mg", "mcg"
+
+  products ProductNutrient[]
+}
+
+/// Per-serving nutrient amount of a product
+model ProductNutrient {
+  id         String @id @default(cuid())
+  productId  String
+  nutrientId String
+  servingId  String
+  amount     Float
+
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  nutrient Nutrient @relation(fields: [nutrientId], references: [id], onDelete: Cascade)
+  serving  Serving? @relation(fields: [servingId], references: [id], onDelete: SetNull)
+
+  @@unique([productId, servingId, nutrientId])
+  @@index([productId])
+  @@index([nutrientId])
+}
+
+/// ====== INGREDIENTS (minimal) ======
+/// Ingredient master (aliases kept for future OCR matching)
+model Ingredient {
+  id      String   @id @default(cuid())
+  name    String   @unique
+  aliases String[] @default([])
+
+  products ProductIngredient[]
+}
+
+/// The ordered ingredient list of a product
+model ProductIngredient {
+  id           String @id @default(cuid())
+  productId    String
+  ingredientId String
+  orderIndex   Int
+
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, ingredientId])
+  @@index([productId])
+  @@index([ingredientId])
+  @@index([productId, orderIndex])
+}
+
+/// ====== ALLERGENS (minimal) ======
+/// Master list of allergens
+model Allergen {
+  id    String @id @default(cuid())
+  key   String @unique
+  label String
+
+  products ProductAllergen[]
+}
+
+/// Allergen flags for a product
+model ProductAllergen {
+  id         String  @id @default(cuid())
+  productId  String
+  allergenId String
+  contains   Boolean @default(false)
+  mayContain Boolean @default(false)
+  facility   Boolean @default(false)
+
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  allergen Allergen @relation(fields: [allergenId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, allergenId])
+  @@index([productId])
+  @@index([allergenId])
+}
+
+/// ====== IMAGES (minimal) ======
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String
+  url       String
+  type      String?
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+}
+
+enum ScanSource {
+  upload
+  camera
+  web
+}
+
+model Scan {
+  id                   String      @id @default(cuid())
+  userId               String?
+  productId            String?
+  dietProfileId        String?
+  source               ScanSource?
+  imageUrl             String?
+  ocrText              String?
+  parsedText           String?
+  ingredientsRaw       Json?
+  matchedIngredientIds String[]    @default([])
+  evaluation           Json?
+  createdAt            DateTime    @default(now())
+
+  user    User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  product Product?     @relation(fields: [productId], references: [id], onDelete: SetNull)
+  profile DietProfile? @relation(fields: [dietProfileId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([productId])
+  @@index([dietProfileId])
+}

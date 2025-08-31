@@ -1,0 +1,22 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+/src/generated/prisma
+.prisma/
+server/prisma/migrations/
+
+# Logs
+*.log
+logs/
+*.sqlite
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+

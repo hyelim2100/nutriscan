@@ -1,0 +1,130 @@
+
+    /* Base: LIGHT theme (default) */
+:root {
+  --bg: #fbfbfd;
+  --surface: #ffffff;
+  --text: #0e1320;
+  --muted: #5c667b;
+  --line: #e7e9ef;
+  --brand: #3e7dff;
+
+  --radius: 14px;
+  --space: 16px;
+  --space-lg: 24px;
+  --maxw: 880px;
+  --shadow: 0 8px 24px rgba(0, 0, 0, .06);
+}
+
+/* DARK theme override (activated via data-theme="dark" on <html>) */
+html[data-theme="dark"] {
+  --bg: #0f1115;
+  --surface: #151821;
+  --text: #e8eaf0;
+  --muted: #9aa3b2;
+  --line: #262a36;
+  --brand: #6aa6ff;
+  --shadow: 0 6px 24px rgba(0, 0, 0, .25);
+}
+
+/* Toggle button (minimal) */
+.theme-toggle {
+  margin-left: auto;               /* push to the right */
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 18px;
+  transition: transform .05s ease, filter .2s ease, background .2s ease;
+}
+.theme-toggle:hover { filter: brightness(1.03); }
+.theme-toggle:active { transform: translateY(1px); }
+
+/* keep the rest of your styles: body, containers, inputs, buttons, etc. */
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Apple SD Gothic Neo", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      display: flex; flex-direction: column;
+    }
+
+    .container { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 var(--space); }
+
+    /* Header */
+    header { padding: 20px 0 8px; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: currentColor; color: var(--brand);
+    }
+    .brand-name { font-weight: 700; letter-spacing: .2px; }
+    .tagline { color: var(--muted); font-size: .92rem; margin-top: 2px; }
+
+    /* Main */
+    main { padding: var(--space-lg) 0; }
+
+    .hero h1 { margin: 0 0 6px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.15; letter-spacing: -.2px; }
+    .hero p { margin: 0; color: var(--muted); max-width: 60ch; }
+
+    .card {
+      margin-top: var(--space-lg);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: var(--space-lg);
+    }
+
+    /* Form grid */
+    form { display: grid; gap: var(--space); }
+    .row { display: grid; gap: var(--space); }
+    @media (min-width: 720px) {
+      form { grid-template-columns: 1fr auto; align-items: end; }
+      .row { grid-template-columns: 1fr auto; }
+    }
+
+    label { font-size: .92rem; color: var(--muted); display: block; margin-bottom: 6px; }
+    input[type="text"], input[type="file"] {
+      width: 100%; padding: 12px 14px; border-radius: 12px;
+      border: 1px solid var(--line); background: transparent; color: var(--text);
+      outline: none;
+    }
+    input[type="text"]:focus, input[type="file"]:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 6px color-mix(in oklab, var(--brand) 25%, transparent);
+    }
+
+    button {
+      cursor: pointer; border: 0; padding: 12px 18px; border-radius: 12px;
+      font-weight: 600; background: var(--text); color: var(--bg);
+      transition: transform .05s ease, filter .2s ease, opacity .2s ease;
+    }
+    button:hover { filter: brightness(1.02); }
+    button:active { transform: translateY(1px); }
+    button[disabled] { opacity: .6; cursor: not-allowed; }
+
+    .ghost {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    /* Results */
+    .results {
+      margin-top: var(--space-lg);
+      padding: var(--space-lg);
+      border-radius: var(--radius);
+      border: 1px dashed var(--line);
+      min-height: 120px;
+    }
+    .empty { text-align: center; color: var(--muted); }
+
+    /* Footer */
+    footer { color: var(--muted); font-size: .9rem; padding: 24px 0 40px; }
+    a { color: var(--brand); text-decoration: none; }
+    a:hover { text-decoration: underline; }

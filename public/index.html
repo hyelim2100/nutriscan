@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NutriScan</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+ <header>
+    <div class="container">
+      <div class="brand" aria-label="Brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div>
+          <div class="brand-name">NutriScan</div>
+          <div class="tagline">Search-first; OCR when needed.</div>
+        </div>
+         <!-- Theme toggle -->
+  <button id="themeToggle" class="theme-toggle" aria-pressed="false" aria-label="Toggle dark mode">
+    🌞
+  </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <section class="hero" aria-labelledby="hero-title">
+        <h1 id="hero-title">Find products fast</h1>
+        <p>Look up by name/brand first. If not found, upload the label to extract nutrition and check preferences.</p>
+      </section>
+
+      <section class="card" aria-labelledby="scan-title">
+        <h2 id="scan-title" style="margin:0 0 10px; font-size: 1.05rem; font-weight: 700;">Search or Scan</h2>
+
+        <!-- Keep these IDs to match app.js -->
+        <form id="searchForm" novalidate>
+          <div>
+            <label for="searchInput">Product name or brand</label>
+            <input id="searchInput" name="q" type="text" placeholder="e.g., ‘Greek yogurt’ or ‘Brand X’" autocomplete="off" />
+          </div>
+          <div>
+            <button id="scanBtn" type="submit">Search</button>
+          </div>
+          <div class="row" style="grid-column: 1 / -1;">
+            <div>
+              <label for="imageInput">…or upload a label image</label>
+              <input id="imageInput" name="image" type="file" accept="image/*" />
+            </div>
+            <div>
+              <button type="button" class="ghost" id="uploadAndScanBtn" title="Run OCR if not found">Scan Image</button>
+            </div>
+          </div>
+        </form>
+
+        <div id="resultBox" class="results" aria-live="polite" aria-busy="false">
+          <div class="empty">Results will appear here.</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">Built for your dietary preferences • <a href="#">Privacy</a> • <a href="#">About</a></div>
+  </footer>
+<script src="/js/app.js" defer></script>
+  <script>
+    // JS goes in your app.js. The snippet below is optional for UX feedback only.
+
+    // Example helpers
+    function setBusy(isBusy) {
+      const box = document.getElementById('resultBox');
+      box.setAttribute('aria-busy', String(isBusy));
+    }
+
+    // TODO in app.js:
+    // - Handle search submit (preventDefault, setBusy(true), fetch DB, render)
+    // - If not found + file provided, call OCR flow
+    // - Render: loading, not-found, error, success (cards)
+    // - Disable buttons while loading, then re-enable
+  </script>
+</body>
+</html>
