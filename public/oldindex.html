@@ -1,28 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NutriScan</title>
-  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
+
 <body>
 
- <header>
-    <div class="container">
-      <div class="brand" aria-label="Brand">
-        <div class="brand-mark" aria-hidden="true"></div>
-        <div>
-          <div class="brand-name">NutriScan</div>
-          <div class="tagline">Search-first; OCR when needed.</div>
-        </div>
-         <!-- Theme toggle -->
-  <button id="themeToggle" class="theme-toggle" aria-pressed="false" aria-label="Toggle dark mode">
-    🌞
-  </button>
-      </div>
+  <header>
+    <div class="header-left">
+      <h1 class="brand-name">NutriScan</h1>
+    </div>
+    <div class="header-right">
+      <!-- Profile Image -->
+      <a href="profile.html">
+        <img src="images/profile.png" alt="Profile" class="profile-img">
+      </a>
     </div>
   </header>
+
+
+
+
+
 
   <main>
     <div class="container">
@@ -34,11 +37,11 @@
       <section class="card" aria-labelledby="scan-title">
         <h2 id="scan-title" style="margin:0 0 10px; font-size: 1.05rem; font-weight: 700;">Search or Scan</h2>
 
-        <!-- Keep these IDs to match app.js -->
         <form id="searchForm" novalidate>
           <div>
             <label for="searchInput">Product name or brand</label>
-            <input id="searchInput" name="q" type="text" placeholder="e.g., ‘Greek yogurt’ or ‘Brand X’" autocomplete="off" />
+            <input id="searchInput" name="q" type="text" placeholder="e.g., ‘Greek yogurt’ or ‘Brand X’"
+              autocomplete="off" />
           </div>
           <div>
             <button id="scanBtn" type="submit">Search</button>
@@ -64,21 +67,7 @@
   <footer>
     <div class="container">Built for your dietary preferences • <a href="#">Privacy</a> • <a href="#">About</a></div>
   </footer>
-<script src="/js/app.js" defer></script>
-  <script>
-    // JS goes in your app.js. The snippet below is optional for UX feedback only.
-
-    // Example helpers
-    function setBusy(isBusy) {
-      const box = document.getElementById('resultBox');
-      box.setAttribute('aria-busy', String(isBusy));
-    }
-
-    // TODO in app.js:
-    // - Handle search submit (preventDefault, setBusy(true), fetch DB, render)
-    // - If not found + file provided, call OCR flow
-    // - Render: loading, not-found, error, success (cards)
-    // - Disable buttons while loading, then re-enable
-  </script>
+  <script src="/js/app.js" defer></script>
 </body>
+
 </html>

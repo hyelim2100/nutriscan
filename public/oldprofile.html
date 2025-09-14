@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NutriScan - Profile</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <div class="brand">
+                <div class="brand-name">NutriScan</div>
+            </div>
+            <nav class="actions">
+                <a href="index.html" class="btn">Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="card" aria-labelledby="profile-title">
+                <h1 id="profile-title">Your Profile</h1>
+                <p>Manage your dietary preferences here. Rules will be used to check products when scanned.</p>
+
+                <div id="rulesBox" class="rules">
+                    <div class="empty">No rules yet. Add one below.</div>
+                </div>
+
+                <form id="ruleForm">
+                    <label for="ruleType">Type</label>
+                    <select id="ruleType" name="type">
+                        <option value="REQUIRE">Require</option>
+                        <option value="AVOID">Avoid</option>
+                        <option value="PREFER">Prefer</option>
+                        <option value="ALLOW">Allow</option>
+                    </select>
+
+                    <label for="ruleLabel">Label</label>
+                    <input id="ruleLabel" name="label" type="text" placeholder="e.g., Peanut, Vegan, Low Sodium"
+                        required />
+
+                    <button type="submit">Add Rule</button>
+                </form>
+
+                <div style="margin-top: 1rem;">
+                    <button id="saveProfileBtn">Save Profile</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">Built for your dietary preferences • <a href="#">Privacy</a> • <a href="#">About</a>
+        </div>
+    </footer>
+
+    <script src="/js/profile.js" defer></script>
+</body>
+
+</html>

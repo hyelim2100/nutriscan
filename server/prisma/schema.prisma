@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  //output   = "../src/generated/prisma"
+  // output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -14,6 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ---------- Enums ----------
 enum DietRule {
   REQUIRE
   AVOID
@@ -21,40 +22,55 @@ enum DietRule {
   ALLOW
 }
 
+enum ScanSource {
+  upload
+  camera
+  web
+}
+
+// ---------- Users / Profiles / Tags ----------
 model User {
   id           String        @id @default(cuid())
   email        String        @unique
   name         String
   createdAt    DateTime      @default(now())
-  dietProfiles DietProfile[]
 
-  scans Scan[]
+  dietProfiles DietProfile[]
+  scans        Scan[]
 }
 
 model DietProfile {
   id        String   @id @default(cuid())
   userId    String
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
 
-  tags  DietProfileTag[]
-  scans Scan[]
+  user   User             @relation(fields: [userId], references: [id])
+  tags   DietProfileTag[]
+  scans  Scan[]
 
   @@index([userId])
+  @@unique([userId]) // enforce exactly one profile per user
 }
 
+// Master list of profile tags (UI/filters/preferences)
 model DietTag {
-  id       String           @id @default(cuid())
-  key      String           @unique
-  label    String
-  profiles DietProfileTag[]
+  id        String           @id @default(cuid())
+  key       String           @unique           // e.g., "vegan", "keto", "gluten_free"
+  label     String                               // e.g., "Vegan", "Keto", "Gluten-free"
+  category  String?                              // optional: "diet" | "allergen" | "religion" ...
+  createdAt DateTime          @default(now())
+
+  profiles  DietProfileTag[]
 }
 
+// Join table: profile ↔ tag with rule/notes
 model DietProfileTag {
   id            String      @id @default(cuid())
   dietProfileId String
   dietTagId     String
   rule          DietRule    @default(ALLOW)
+  notes         String?
+
   profile       DietProfile @relation(fields: [dietProfileId], references: [id], onDelete: Cascade)
   tag           DietTag     @relation(fields: [dietTagId], references: [id], onDelete: Cascade)
 
@@ -63,12 +79,12 @@ model DietProfileTag {
   @@index([dietTagId])
 }
 
-//============== Products ================
-
+// ---------- Products ----------
 model Brand {
   id        String    @id @default(cuid())
   name      String    @unique
   createdAt DateTime  @default(now())
+
   products  Product[]
 }
 
@@ -79,14 +95,13 @@ model Product {
   barcode   String?  @unique
   createdAt DateTime @default(now())
 
-  brand Brand? @relation(fields: [brandId], references: [id], onDelete: SetNull)
-
-  servings    Serving[] // 1..n serving sizes
-  nutrients   ProductNutrient[] // per-serving nutrient amounts
-  ingredients ProductIngredient[] // ordered ingredient list
-  allergens   ProductAllergen[] // allergen flags
-  images      ProductImage[] // product photos
-  scans       Scan[] // OCR provenance
+  brand       Brand?             @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  servings    Serving[]          // 1..n serving sizes
+  nutrients   ProductNutrient[]  // per-serving nutrient amounts
+  ingredients ProductIngredient[]// ordered ingredient list
+  allergens   ProductAllergen[]  // allergen flags
+  images      ProductImage[]     // product photos
+  scans       Scan[]             // OCR provenance
 
   @@index([name])
 }
@@ -98,24 +113,24 @@ model Serving {
   unit             String
   householdMeasure String?
 
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
+  product   Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
   nutrients ProductNutrient[]
 
   @@index([productId])
+  @@unique([productId, amount, unit, householdMeasure]) // prevent duplicate servings per product
 }
 
-/// Master list of nutrients (calories, protein, sodium, etc.)
+// Master list of nutrients (calories, protein, sodium, etc.)
 model Nutrient {
   id   String @id @default(cuid())
-  key  String @unique // e.g., "energy_kcal", "protein", "sodium"
-  name String // display name
-  unit String // "kcal", "g", "mg", "mcg"
+  key  String @unique // e.g., "energy_kcal", "protein_g", "sodium_mg"
+  name String         // display name
+  unit String         // "kcal", "g", "mg", "mcg"
 
   products ProductNutrient[]
 }
 
-/// Per-serving nutrient amount of a product
+// Per-serving nutrient amount of a product
 model ProductNutrient {
   id         String @id @default(cuid())
   productId  String
@@ -125,15 +140,14 @@ model ProductNutrient {
 
   product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   nutrient Nutrient @relation(fields: [nutrientId], references: [id], onDelete: Cascade)
-  serving  Serving? @relation(fields: [servingId], references: [id], onDelete: SetNull)
+  serving  Serving  @relation(fields: [servingId], references: [id], onDelete: Cascade)
 
   @@unique([productId, servingId, nutrientId])
   @@index([productId])
   @@index([nutrientId])
 }
 
-/// ====== INGREDIENTS (minimal) ======
-/// Ingredient master (aliases kept for future OCR matching)
+// ---------- Ingredients ----------
 model Ingredient {
   id      String   @id @default(cuid())
   name    String   @unique
@@ -142,7 +156,7 @@ model Ingredient {
   products ProductIngredient[]
 }
 
-/// The ordered ingredient list of a product
+// The ordered ingredient list of a product
 model ProductIngredient {
   id           String @id @default(cuid())
   productId    String
@@ -158,8 +172,7 @@ model ProductIngredient {
   @@index([productId, orderIndex])
 }
 
-/// ====== ALLERGENS (minimal) ======
-/// Master list of allergens
+// ---------- Allergens ----------
 model Allergen {
   id    String @id @default(cuid())
   key   String @unique
@@ -168,7 +181,7 @@ model Allergen {
   products ProductAllergen[]
 }
 
-/// Allergen flags for a product
+// Allergen flags for a product
 model ProductAllergen {
   id         String  @id @default(cuid())
   productId  String
@@ -185,7 +198,7 @@ model ProductAllergen {
   @@index([allergenId])
 }
 
-/// ====== IMAGES (minimal) ======
+// ---------- Images ----------
 model ProductImage {
   id        String   @id @default(cuid())
   productId String
@@ -198,12 +211,7 @@ model ProductImage {
   @@index([productId])
 }
 
-enum ScanSource {
-  upload
-  camera
-  web
-}
-
+// ---------- OCR / Scans ----------
 model Scan {
   id                   String      @id @default(cuid())
   userId               String?

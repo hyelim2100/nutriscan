@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>
+        <%= title %> • <%= siteName %>
+    </title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <%- include('../partials/header') %>
+
+        <main class="container">
+            <section class="card" aria-labelledby="profile-title">
+                <h1 id="profile-title">Your Profile</h1>
+                <p>Choose preset tags. These will be used to evaluate products.</p>
+
+                <!-- Row 1: Nutrition -->
+                <div class="row-head">
+                    <h3>Nutrition</h3>
+                </div>
+                <div class="scroll-row" id="rowNutrition" role="group" aria-label="Nutrition presets">
+                    <!-- Each toggle is a button with aria-pressed state -->
+                    <button class="toggle" aria-pressed="false" data-category="NUTRITION" data-key="low_carb"
+                        data-metric="carbs" data-op="<=" data-value="15" data-unit="g">
+                        Low Carb ≤ 15g
+                    </button>
+
+                    <button class="toggle" aria-pressed="false" data-category="NUTRITION" data-key="low_sodium"
+                        data-metric="sodium" data-op="<=" data-value="140" data-unit="mg">
+                        Low Sodium ≤ 140mg
+                    </button>
+
+                    <button class="toggle" aria-pressed="false" data-category="NUTRITION" data-key="low_sugar"
+                        data-metric="sugars" data-op="<=" data-value="5" data-unit="g">
+                        Low Sugar ≤ 5g
+                    </button>
+                </div>
+
+                <!-- Row 2: Ingredients -->
+                <div class="row-head" style="margin-top: 14px;">
+                    <h3>Ingredients</h3>
+                </div>
+                <div class="scroll-row" id="rowIngredients" role="group" aria-label="Ingredient presets">
+                    <button class="toggle" aria-pressed="false" data-category="INGREDIENT"
+                        data-key="vegan">Vegan</button>
+                    <button class="toggle" aria-pressed="false" data-category="INGREDIENT"
+                        data-key="vegetarian">Vegetarian</button>
+                    <button class="toggle" aria-pressed="false" data-category="INGREDIENT"
+                        data-key="gluten_free">Gluten-Free</button>
+                    <button class="toggle" aria-pressed="false" data-category="INGREDIENT"
+                        data-key="dairy_free">Dairy-Free</button>
+                    <button class="toggle" aria-pressed="false" data-category="INGREDIENT"
+                        data-key="nut_free">Nut-Free</button>
+                    <button class="toggle" aria-pressed="false" data-category="INGREDIENT"
+                        data-key="pork_free">Pork-Free</button>
+                    <button class="toggle" aria-pressed="false" data-category="INGREDIENT"
+                        data-key="gelatin_free">Gelatin-Free</button>
+                </div>
+
+                <!-- Selected preview -->
+                <div class="selected-box" id="selectedBox" aria-live="polite" style="margin-top: var(--space);">
+                    <div class="empty">No tags selected.</div>
+                </div>
+
+                <!-- Actions -->
+                <div class="actions" style="margin-top: var(--space);">
+                    <button id="saveProfileBtn">Save Profile</button>
+                </div>
+            </section>
+        </main>
+
+        <%- include('../partials/footer') %>
+</body>
+
+</html>
